@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-public class Maze {
+public class MazeMap {
     private static final int ROAD = 0;
     private static final int WALL = 1;
     private static final int START = 2;
@@ -14,11 +14,12 @@ public class Maze {
     private static final int PATH = 4;
 
     private int[][] maze;
-    private boolean[][] visited;
+    
+	private boolean[][] visited;
     private Node start;
     private Node end;
 
-    public Maze(File maze) throws FileNotFoundException {
+    public MazeMap(File maze) throws FileNotFoundException {
         String fileText = "";
         try (Scanner input = new Scanner(maze)) {
             while (input.hasNextLine()) {
@@ -57,6 +58,10 @@ public class Maze {
         }
     }
 
+    public int[][] getMaze() {
+		return maze;
+	}
+    
     public int getHeight() {
         return maze.length;
     }

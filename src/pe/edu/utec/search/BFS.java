@@ -2,38 +2,51 @@ package pe.edu.utec.search;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class BFS {
     private static final int[][] DIRECTIONS = { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 } };
+    private static int depth = 0;
+    private static int maxFrontierSize = 0;
+    private LinkedList<Node> frontier = new LinkedList<>(); // equivalent to the Edge data structure
+	private Set<Node> exploredNodes = new HashSet<Node>();
 
-    public List<Node> solve(Maze maze) {
-        LinkedList<Node> nextToVisit = new LinkedList<>();
-        Node start = maze.getEntry();
-        nextToVisit.add(start);
+	public List<Node> solve(MazeMap mazeMap) {
+        
+        
+        Node start = mazeMap.getEntry();
+        frontier.add(start);
 
-        while (!nextToVisit.isEmpty()) {
-        	Node cur = nextToVisit.remove();
+        while (!frontier.isEmpty()) {
+        	
+        	if (frontier.size() > maxFrontierSize) maxFrontierSize = frontier.size();
+        	
+        	Node cur = frontier.remove();
 
-            if (!maze.isValidLocation(cur.getX(), cur.getY()) || maze.isExplored(cur.getX(), cur.getY())) {
+            if (!mazeMap.isValidLocation(cur.getX(), cur.getY()) || mazeMap.isExplored(cur.getX(), cur.getY())) {
                 continue;
             }
 
-            if (maze.isWall(cur.getX(), cur.getY())) {
-                maze.setVisited(cur.getX(), cur.getY(), true);
+            if (mazeMap.isWall(cur.getX(), cur.getY())) {
+                mazeMap.setVisited(cur.getX(), cur.getY(), true);
+                exploredNodes.add(cur);
                 continue;
             }
 
-            if (maze.isExit(cur.getX(), cur.getY())) {
+            if (mazeMap.isExit(cur.getX(), cur.getY())) {
                 return backtrackPath(cur);
             }
 
             for (int[] direction : DIRECTIONS) {
-            	Node coordinate = new Node(cur.getX() + direction[0], cur.getY() + direction[1], cur);
-                nextToVisit.add(coordinate);
-                maze.setVisited(cur.getX(), cur.getY(), true);
+            	Node node = new Node(cur.getX() + direction[0], cur.getY() + direction[1], cur);
+                frontier.add(node);
+                mazeMap.setVisited(cur.getX(), cur.getY(), true);
+                exploredNodes.add(cur);
             }
+            depth++;
         }
         return Collections.emptyList();
     }
@@ -49,4 +62,20 @@ public class BFS {
 
         return path;
     }
+    
+    public int getDepth() {
+		return depth;
+	}
+    
+    public int getMaxFrontierSize() {
+		return maxFrontierSize;
+	}
+    
+    public LinkedList<Node> getFrontier() {
+		return frontier;
+	}
+
+	public Set<Node> getExploredNodes() {
+		return exploredNodes;
+	}
 }
